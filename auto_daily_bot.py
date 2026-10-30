@@ -326,15 +326,22 @@ def run_category(target_cat):
                         if "checkpoint" in page.url or "login" in page.url:
                             print(f"🔴 {prof} : Checkpoint sur mbasic -> passage au profil suivant !")
                             break
-                        ta = page.locator('textarea[name="comment_text"], textarea').first
+                        print(f"   🌐 [{prof}] Titre: {page.title()[:35]} | URL: {page.url[:55]}")
+                        # Ouvrir le volet commentaire si c est un Reel ou Post replié
+                        btn_comm = page.locator('div[aria-label*="Comment"], div[aria-label*="Commenter"], div[aria-label*="تعليق"], span:has-text("Commenter"), span:has-text("Comment")').first
+                        if btn_comm.count() > 0:
+                            try: btn_comm.click(timeout=2000)
+                            except: pass
+                            page.wait_for_timeout(1200)
+                        ta = page.locator('div[role="textbox"][contenteditable="true"], div[aria-label*="comment"], div[aria-label*="commentaire"], div[aria-label*="تعليق"], textarea[name="comment_text"], textarea').first
                         if ta.count() > 0:
-                            ta.fill(comment)
+                            ta.click(force=True)
                             page.wait_for_timeout(700)
-                            sub = page.locator('input[type="submit"], button[type="submit"]').first
-                            if sub.count() > 0:
-                                sub.click(force=True)
-                                page.wait_for_timeout(3000)
-                                ok = True
+                            page.keyboard.type(comment, delay=20)
+                            page.wait_for_timeout(600)
+                            page.keyboard.press("Enter")
+                            page.wait_for_timeout(2500)
+                            ok = True
 
                     if ok:
                         post_counts[target_url] += 1
