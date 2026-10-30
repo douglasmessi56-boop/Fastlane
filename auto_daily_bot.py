@@ -313,9 +313,9 @@ def run_category(target_cat):
                     page.goto(target_url, wait_until="domcontentloaded", timeout=35000)
                     page.wait_for_timeout(4000)
 
-                    if "/checkpoint/" in page.url.lower() and "next=" not in page.url.lower():
-                        print(f"🔴 {prof} : Tentative de commentaire directe sur la page...")
-                        pass # continuer sans couper
+                    if "checkpoint" in page.url or "login" in page.url:
+                        print(f"🔴 {prof} : Checkpoint/Login détecté -> passage immédiat au profil suivant !")
+                        break
 
                     ok = try_post_comment(page, comment)
 
@@ -323,25 +323,16 @@ def run_category(target_cat):
                         mbasic_url = re.sub(r'^https?://(www\.|m\.)?facebook\.com', 'https://www.facebook.com', target_url)
                         page.goto(mbasic_url, wait_until="domcontentloaded", timeout=35000)
                         page.wait_for_timeout(3000)
-                        if "/checkpoint/" in page.url.lower() and "next=" not in page.url.lower():
+                        if "checkpoint" in page.url or "login" in page.url:
                             print(f"🔴 {prof} : Checkpoint sur mbasic -> passage au profil suivant !")
-                            pass # continuer sans couper
-                        print(f"   🌐 Page : {page.title()} | URL : {page.url[:65]}")
-                        box = page.locator('div[role="textbox"][contenteditable="true"], textarea[name="comment_text"], textarea').first
-                        if box.count() > 0:
-                            box.click(force=True)
-                            page.wait_for_timeout(800)
-                            page.keyboard.type(comment, delay=25)
-                            page.wait_for_timeout(600)
-                            page.keyboard.press("Enter")
-                            page.wait_for_timeout(3000)
+                            break
+                        ta = page.locator('textarea[name="comment_text"], textarea').first
+                        if ta.count() > 0:
+                            ta.fill(comment)
+                            page.wait_for_timeout(700)
                             sub = page.locator('input[type="submit"], button[type="submit"]').first
                             if sub.count() > 0:
                                 sub.click(force=True)
-                            print(f"   ✅ Commentaire envoyé par {prof} : {comment[:30]}...")
-                            ok = True
-                        else:
-                            print("   ⚠️ Zone de commentaire non trouvée sur cette page")
                                 page.wait_for_timeout(3000)
                                 ok = True
 
