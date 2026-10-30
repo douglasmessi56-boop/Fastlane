@@ -1,18 +1,16 @@
 
 def get_tn_proxy():
-    import os, re
+    import os, random, string, re
     s = os.environ.get("PROXY_TN", "").strip()
     if not s: return None
     if "://" in s and "@" in s:
         proto, rest = s.split("://", 1)
         creds, hp = rest.rsplit("@", 1)
         u, pw = creds.split(":", 1)
-        # Garder uniquement _country-tn sans bloquer sur une session morte
-        pw = re.sub(r"_session-[^_]+", "", pw)
-        pw = re.sub(r"_lifetime-[^_]+", "", pw)
-        if "_country-tn" not in pw:
-            pw = pw + "_country-tn"
-        return {"server": f"{proto}://{hp}", "username": u, "password": pw}
+        base_pw = pw.split("_country-")[0]
+        sid = "".join(random.choices(string.ascii_lowercase + string.digits, k=8))
+        pw_clean = f"{base_pw}_country-tn_session-{sid}_lifetime-10m"
+        return {"server": f"{proto}://{hp}", "username": u, "password": pw_clean}
     return {"server": s}
 
 import os, sys, time, random, re
