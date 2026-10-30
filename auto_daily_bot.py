@@ -326,13 +326,19 @@ def run_category(target_cat):
                         if "/checkpoint/" in page.url.lower() and "next=" not in page.url.lower():
                             print(f"🔴 {prof} : Checkpoint sur mbasic -> passage au profil suivant !")
                             pass # continuer sans couper
-                        ta = page.locator('textarea[name="comment_text"], textarea').first
-                        if ta.count() > 0:
-                            ta.fill(comment)
-                            page.wait_for_timeout(700)
-                            sub = page.locator('input[type="submit"], button[type="submit"]').first
-                            if sub.count() > 0:
-                                sub.click(force=True)
+                        print(f"   🌐 Page ouverte : {page.title()} | URL : {page.url[:65]}")
+                box = page.locator('div[role="textbox"][contenteditable="true"], textarea[name="comment_text"], textarea').first
+                if box.count() > 0:
+                    box.click(force=True)
+                    page.wait_for_timeout(800)
+                    page.keyboard.type(comment, delay=25)
+                    page.wait_for_timeout(600)
+                    page.keyboard.press("Enter")
+                    page.wait_for_timeout(3000)
+                    print(f"   ✅ Commentaire envoyé par {prof} : {comment[:30]}...")
+                    ok = True
+                else:
+                    print(f"   ⚠️ Boîte de commentaire introuvable sur cette page (Cookies/Login requis)")
                                 page.wait_for_timeout(3000)
                                 ok = True
 
