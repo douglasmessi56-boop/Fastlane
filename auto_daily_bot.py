@@ -1,18 +1,17 @@
 
 def get_tn_proxy():
-    import os, random, string, re
+    import os, re
     s = os.environ.get("PROXY_TN", "").strip()
     if not s: return None
     if "://" in s and "@" in s:
         proto, rest = s.split("://", 1)
         creds, hp = rest.rsplit("@", 1)
         u, pw = creds.split(":", 1)
-        # IPRoyal exige exactement 8 caractères alphanumériques pour _session-XXXXXXXX
-        sid = "".join(random.choices(string.ascii_letters + string.digits, k=8))
-        if "_session-" in pw:
-            pw = re.sub(r"_session-[^_]+", f"_session-{sid}", pw)
-        elif "_country-tn" in pw:
-            pw = pw + f"_session-{sid}_lifetime-10m"
+        # Garder uniquement _country-tn sans bloquer sur une session morte
+        pw = re.sub(r"_session-[^_]+", "", pw)
+        pw = re.sub(r"_lifetime-[^_]+", "", pw)
+        if "_country-tn" not in pw:
+            pw = pw + "_country-tn"
         return {"server": f"{proto}://{hp}", "username": u, "password": pw}
     return {"server": s}
 
