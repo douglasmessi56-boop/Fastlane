@@ -339,29 +339,50 @@ def run_category(target_cat):
                             print(f"🔴 {prof} : Checkpoint sur mbasic -> passage au profil suivant !")
                             break
                         print(f"   🌐 [{prof}] Titre: {page.title()[:35]} | URL: {page.url[:55]}")
-                        # Ouvrir le volet commentaire si c est un Reel ou Post replié
-                        btn_comm = page.locator('div[aria-label*="Comment"], div[aria-label*="Commenter"], div[aria-label*="تعليق"], span:has-text("Commenter"), span:has-text("Comment")').first
-                        if btn_comm.count() > 0:
-                            try: btn_comm.click(timeout=2000)
-                            except: pass
+                        posted_ok = False
+                        for attempt_mode in ["desktop", "mobile"]:
+                            if attempt_mode == "mobile":
+                                m_url = u.replace("www.facebook.com", "m.facebook.com")
+                                page.goto(m_url, wait_until="domcontentloaded", timeout=30000)
+                                page.wait_for_timeout(3500)
+                            # Fermer les popups cookies éventuels
+                            for c_txt in ["Autoriser tous les cookies", "Allow all cookies", "السماح بكل ملفات تعريف الارتباط"]:
+                                try:
+                                    cb = page.locator(f"text='{c_txt}'").first
+                                    if cb.is_visible(timeout=400): cb.click(); page.wait_for_timeout(800)
+                                except: pass
+                            # Scroller et cliquer sur le bouton Commenter / تعليق pour déplier la zone
+                            page.mouse.wheel(0, 400)
                             page.wait_for_timeout(1200)
-                        ta = page.locator('div[role="textbox"][contenteditable="true"], div[aria-label*="comment"], div[aria-label*="commentaire"], div[aria-label*="تعليق"], textarea[name="comment_text"], textarea').first
-                        if ta.count() > 0:
-                            ta.click(force=True)
-                            page.wait_for_timeout(700)
-                            page.keyboard.type(comment, delay=20)
-                            page.wait_for_timeout(600)
-                            page.keyboard.press("Enter")
-                            page.wait_for_timeout(2500)
-                            ok = True
-
-                    if ok:
-                        post_counts[target_url] += 1
-                        print(f"✅ [{target_cat} Post {u_idx+1}/{len(posts)}] ({post_counts[target_url]}/{MAX_COMMENTS_PER_POST}) {prof} -> {comment}")
-                        print(f"⏳ Pause de {DELAY_SECONDS} secondes...")
-                        time.sleep(DELAY_SECONDS)
-                    else:
-                        print(f"⚠️ {prof} : Zone commentaire non trouvée sur Post {u_idx+1}")
+                            for btn_sel in ["div[role='button']:has-text('Commenter')", "div[role='button']:has-text('تعليق')", "span:has-text('Commenter')", "span:has-text('تعليق')", "[aria-label*='omment' i]", "[aria-label*='تعليق']"]:
+                                try:
+                                    b_el = page.locator(btn_sel).first
+                                    if b_el.is_visible(timeout=600):
+                                        b_el.click(force=True)
+                                        page.wait_for_timeout(1500)
+                                        break
+                                except: pass
+                            # Chercher la zone de texte
+                            ta = page.locator('div[role="textbox"][contenteditable="true"], div[contenteditable="true"][aria-label*="omment" i], div[contenteditable="true"][aria-label*="تعليق"], div[contenteditable="true"][aria-label*="اكتب"], div[contenteditable="true"], textarea[name="comment_text"], textarea').last
+                            if ta.is_visible(timeout=3500):
+                                ta.scroll_into_view_if_needed()
+                                ta.click(force=True)
+                                page.wait_for_timeout(700)
+                                msg = random.choice(COMMENTS)
+                                page.keyboard.type(msg, delay=35)
+                                page.wait_for_timeout(800)
+                                page.keyboard.press("Enter")
+                                page.wait_for_timeout(2500)
+                                for s_btn in ["[aria-label='Commenter']", "[aria-label='تعليق']", "[aria-label='Envoyer']", "[aria-label='إرسال']", "button[type='submit']"]:
+                                    try:
+                                        sb = page.locator(s_btn).last
+                                        if sb.is_visible(timeout=500): sb.click(force=True); page.wait_for_timeout(1200); break
+                                    except: pass
+                                print(f"   ✅ {prof} : Commentaire publié sur Post {u_idx+1} ({attempt_mode}) -> {msg}")
+                                posted_ok = True
+                                break
+                        if not posted_ok:
+                            print(f"   ⚠️ {prof} : Zone commentaire non trouvée sur Post {u_idx+1}")
 
                 browser.close()
             except Exception as e:
