@@ -314,8 +314,8 @@ def run_category(target_cat):
                     page.wait_for_timeout(4000)
 
                     if "/checkpoint/" in page.url.lower() and "next=" not in page.url.lower():
-                        print(f"🔴 {prof} : Checkpoint/Login détecté -> passage immédiat au profil suivant !")
-                        break
+                        print(f"🔴 {prof} : Tentative de commentaire directe sur la page...")
+                        pass # continuer sans couper
 
                     ok = try_post_comment(page, comment)
 
@@ -325,7 +325,7 @@ def run_category(target_cat):
                         page.wait_for_timeout(3000)
                         if "/checkpoint/" in page.url.lower() and "next=" not in page.url.lower():
                             print(f"🔴 {prof} : Checkpoint sur mbasic -> passage au profil suivant !")
-                            break
+                            pass # continuer sans couper
                         ta = page.locator('textarea[name="comment_text"], textarea').first
                         if ta.count() > 0:
                             ta.fill(comment)
