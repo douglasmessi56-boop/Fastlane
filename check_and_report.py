@@ -7,6 +7,10 @@ if proxy_str and "://" in proxy_str and "@" in proxy_str:
     proto, rest = proxy_str.split("://", 1)
     creds, hostport = rest.rsplit("@", 1)
     u, pw = creds.split(":", 1)
+    import random, string, re
+    sid = "".join(random.choices(string.ascii_letters + string.digits, k=8))
+    if "_session-" in pw:
+        pw = re.sub(r"_session-[^_]+", f"_session-{sid}", pw)
     proxy_cfg = {"server": f"{proto}://{hostport}", "username": u, "password": pw}
     print(f"🌍 Proxy Tunisien activé : {proxy_cfg['server']}")
 
