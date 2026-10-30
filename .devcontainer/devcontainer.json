@@ -1,0 +1,4 @@
+{
+  "name": "Fastlane 24-7",
+  "postStartCommand": "nohup python3 /workspaces/Fastlane/keep_alive.py > /workspaces/Fastlane/keep.log 2>&1 &"
+}
