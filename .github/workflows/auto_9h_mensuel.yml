@@ -41,4 +41,4 @@ jobs:
       - name: Lancement ${{ matrix.categorie }} (21 profils x Publications - 40s ecart)
         run: |
           sleep $((RANDOM % 45))
-          python3 -u check_and_report.py && python3 -u auto_daily_bot.py ${{ matrix.categorie }}
+          PROXY_TN="${{ secrets.PROXY_TN }}" python3 -u check_and_report.py && PROXY_TN="${{ secrets.PROXY_TN }}" python3 -u auto_daily_bot.py ${{ matrix.categorie }}

@@ -1,3 +1,15 @@
+
+def get_tn_proxy():
+    import os
+    s = os.environ.get("PROXY_TN", "").strip()
+    if not s: return None
+    if "://" in s and "@" in s:
+        proto, rest = s.split("://", 1)
+        creds, hp = rest.rsplit("@", 1)
+        u, pw = creds.split(":", 1)
+        return {"server": f"{proto}://{hp}", "username": u, "password": pw}
+    return {"server": s}
+
 import os, sys, time, random, re
 from datetime import datetime
 from playwright.sync_api import sync_playwright
@@ -297,7 +309,7 @@ def run_category(target_cat):
             print(f"\n👤 [{p_idx+1}/{len(profils)}] Test du profil : {prof} sur les {len(posts)} publications {target_cat}...")
 
             try:
-                browser = p.chromium.launch(headless=True, args=["--no-sandbox", "--disable-blink-features=AutomationControlled"])
+                browser = p.chromium.launch(headless=True, proxy=get_tn_proxy(), args=["--no-sandbox", "--disable-blink-features=AutomationControlled"])
                 context = browser.new_context(
                     storage_state=prof_path,
                     user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
