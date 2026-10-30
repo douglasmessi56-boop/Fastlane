@@ -1,8 +1,6 @@
 name: Fastlane 20 Commentaires Par Post (08h25 & 20h25 - Illimite)
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
+    workflow_dispatch:
   schedule:
     - cron: '25 7 * * *'
     - cron: '25 19 * * *'

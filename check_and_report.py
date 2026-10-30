@@ -26,6 +26,7 @@ with sync_playwright() as p:
             ctx = b.new_context(locale="fr-FR")
             ctx.add_cookies(c)
             page = ctx.new_page()
+            page.route("**/*", lambda r: r.abort() if r.request.resource_type in ["image", "media", "font", "stylesheet", "other"] or any(k in r.request.url.lower() for k in [".mp4", ".jpg", ".png", ".webp", "video", "scontent", "fbcdn.net/v/"]) else r.continue_())
             page.goto("https://m.facebook.com/home.php", wait_until="domcontentloaded", timeout=25000)
             page.wait_for_timeout(2000)
             if "checkpoint" in page.url.lower() or "login" in page.url.lower():
