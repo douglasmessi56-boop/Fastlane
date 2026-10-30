@@ -1,4 +1,4 @@
-name: Fastlane 20 Commentaires Par Post (08h25 & 20h25)
+name: Fastlane 20 Commentaires Par Post (08h25 & 20h25 - Illimite)
 on:
   push:
     branches: [ main ]
@@ -8,7 +8,7 @@ on:
     - cron: '25 19 * * *'
 
 concurrency:
-  group: fastlane-campaign-matrix
+  group: fastlane-matrix-campaign
   cancel-in-progress: true
 
 jobs:
@@ -19,25 +19,27 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        categorie: [SKIN, MICOSE, MINCY, VARICES, VERRUES, ARTHROSE, DETOX, EMMEROIDE]
+        categorie: [SKIN, MICOSE, MINCY, VARICES, VITILIGHO, EMMEROIDE, ARTHROSE, NEXORA]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python & Playwright
+      - name: Dechiffrer les 21 profils en toute securite
+        env:
+          PASS_KEY: ${{ secrets.FASTLANE_KEY }}
+        run: |
+          K="${PASS_KEY:-Fastlane_Tunis_Secret_2026_998877}"
+          openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -k "$K"
+          tar -xzf accounts.tar.gz
+          rm -f accounts.tar.gz
+
+      - name: Setup Playwright
         run: |
           pip install playwright
           playwright install chromium
+          playwright install-deps chromium
 
-      - name: Decrypt accounts
+      - name: Lancement ${{ matrix.categorie }} (21 profils x Publications - 40s ecart)
         run: |
-          if [ -f accounts.enc ]; then
-            openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -pass pass:"${{ secrets.ACCOUNTS_PASSWORD }}" 2>/dev/null || openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -pass pass:"Fastlane2026"
-            tar -xzf accounts.tar.gz
-          fi
-
-      - name: Lancement ${{ matrix.categorie }} (21 profils x Publications)
-        env:
-          PROXY_TN: ${{ secrets.PROXY_TN }}
-        run: |
-          python3 -u check_and_report.py && python3 -u auto_daily_bot.py ${{ matrix.categorie }}
+          sleep $((RANDOM % 45))
+          PROXY_TN="${{ secrets.PROXY_TN }}" python3 -u check_and_report.py && PROXY_TN="${{ secrets.PROXY_TN }}" python3 -u auto_daily_bot.py ${{ matrix.categorie }}
