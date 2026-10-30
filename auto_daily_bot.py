@@ -320,7 +320,7 @@ def run_category(target_cat):
                     ok = try_post_comment(page, comment)
 
                     if not ok:
-                        mbasic_url = re.sub(r'^https?://(www\.|m\.)?facebook\.com', 'https://mbasic.facebook.com', target_url)
+                        mbasic_url = re.sub(r'^https?://(www\.|m\.)?facebook\.com', 'https://www.facebook.com', target_url)
                         page.goto(mbasic_url, wait_until="domcontentloaded", timeout=35000)
                         page.wait_for_timeout(3000)
                         if "checkpoint" in page.url or "login" in page.url:
