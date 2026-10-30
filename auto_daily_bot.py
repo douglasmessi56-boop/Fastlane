@@ -348,7 +348,7 @@ def run_category(target_cat):
                         posted_ok = False
                         for attempt_mode in ["desktop", "mobile"]:
                             if attempt_mode == "mobile":
-                                m_url = u.replace("www.facebook.com", "m.facebook.com")
+                                m_url = page.url.replace("www.facebook.com", "m.facebook.com")
                                 page.goto(m_url, wait_until="domcontentloaded", timeout=30000)
                                 page.wait_for_timeout(3500)
                             # Fermer les popups cookies éventuels
