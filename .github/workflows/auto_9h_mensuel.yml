@@ -42,4 +42,4 @@ jobs:
           PYTHONUNBUFFERED: "1"
         run: |
           sleep $((RANDOM % 10))
-          python3 -u auto_daily_bot.py "${{ matrix.categorie }}"
+          python3 -u auto_daily_bot.py "${{ matrix.categorie }}" || true

@@ -1,0 +1,44 @@
+[33mcommit d1a223fb61969f8403526168a01f5281902590d4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: douglasmessi56-boop <douglasmessi56@gmail.com>
+Date:   Fri Oct 30 23:51:04 2026 +0000
+
+    Fix: Suppression definitive de mbasic pour proteger les cookies
+
+ .github/workflows/auto_9h_mensuel.yml | 2 [31m--[m
+ 1 file changed, 2 deletions(-)
+
+[33mcommit 9fbe6f1a2b7c09a1f43e7c65632302d3f765c874[m
+Author: douglasmessi56-boop <douglasmessi56@gmail.com>
+Date:   Fri Oct 30 23:30:51 2026 +0000
+
+    Fix: Syntaxe propre sur la ligne page.route
+
+ check_and_report.py | 2 [32m+[m[31m-[m
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+[33mcommit 9f1c3209e8dc49ee1ea8f2d67321221120fabb6d[m
+Author: douglasmessi56-boop <douglasmessi56@gmail.com>
+Date:   Fri Oct 30 23:27:36 2026 +0000
+
+    Fix: Autoriser requetes AJAX/other pour afficher la boite commentaire
+
+ check_and_report.py | 2 [32m+[m[31m-[m
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+[33mcommit 5104e9035c842e3fdc7f9df822f6e82e8d627edf[m
+Author: douglasmessi56-boop <douglasmessi56@gmail.com>
+Date:   Fri Oct 30 23:23:14 2026 +0000
+
+    Fix: Restauration étape Decrypt accounts originale + Proxy TN
+
+ .github/workflows/auto_9h_mensuel.yml | 32 [32m+++++++++++++++++[m[31m---------------[m
+ 1 file changed, 17 insertions(+), 15 deletions(-)
+
+[33mcommit 61c44a0907cad5e78c2289603ee2c3ffa25f59a8[m
+Author: douglasmessi56-boop <douglasmessi56@gmail.com>
+Date:   Fri Oct 30 23:20:32 2026 +0000
+
+    Fix: Syntaxe YAML parfaite + Lancement Topnet Tunisie
+
+ .github/workflows/auto_9h_mensuel.yml | 36 [32m++++++++++++++++++[m[31m------------------[m
+ 1 file changed, 18 insertions(+), 18 deletions(-)
