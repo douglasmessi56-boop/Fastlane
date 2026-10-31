@@ -27,8 +27,10 @@ jobs:
 
       - name: 🔓 Déchiffrement des 21 profils
         run: |
-          openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -pass pass:"Fastlane2026"
-          tar -xzf accounts.tar.gz
+          if [ -f accounts.enc ]; then
+            openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -pass pass:"Fastlane2026" || openssl enc -d -aes-256-cbc -in accounts.enc -out accounts.tar.gz -pass pass:"Fastlane2026"
+            tar -xzf accounts.tar.gz
+          fi
           ls -la Profil_*.json | head -n 5
 
       - name: 🎭 Installation navigateur
@@ -42,4 +44,4 @@ jobs:
           PYTHONUNBUFFERED: "1"
         run: |
           sleep $((RANDOM % 10))
-          python3 -u auto_daily_bot.py "${{ matrix.categorie }}" || true
+          python3 -u auto_daily_bot.py "${{ matrix.categorie }}"
