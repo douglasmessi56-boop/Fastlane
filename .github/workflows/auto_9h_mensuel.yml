@@ -1,6 +1,8 @@
 name: 🚀 Fastlane - Générateur Manuel (63 Publications)
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
     inputs:
       produit:
@@ -42,7 +44,7 @@ jobs:
       - name: 🔓 Déchiffrement des 21 profils
         if: ${{ github.event.inputs.produit == 'ALL' || github.event.inputs.produit == matrix.categorie || github.event.inputs.produit == '' }}
         run: |
-          openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -pass pass:"${{ secrets.ACCOUNTS_PASS }}"
+          openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -pass pass:"Fastlane2026"
           tar -xzf accounts.tar.gz
 
       - name: 🎭 Installation navigateur
