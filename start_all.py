@@ -85,8 +85,40 @@ HTML = """<!DOCTYPE html>
       <div style="color:#94a3b8;font-size:13px;margin-top:4px;">⏱ 40 secondes d'écart entre chaque commentaire • 🇹🇳 Proxy Tunisien • 💻 Continue même Mac fermé</div>
     </div>
     <div style="display:flex;gap:10px;">
+            <button class="btn-gen" style="background:#f59e0b;color:#000;" onclick="document.getElementById('cookieModal').style.display='block'">🍪 Mettre à jour les Profils (Cookies)</button>
       <button class="btn-gen" onclick="loadApp()">🔄 Régénérer les 1 260 Commentaires</button>
       <button class="btn-go" onclick="startCloud()">▶️ LANCER L'OPÉRATION SUR LES 63 PUBLICATIONS</button>
+    </div>
+  </div>
+    <div id="cookieModal" style="display:none;background:#1e293b;padding:20px;border-radius:12px;margin-top:15px;border:2px solid #f59e0b;">
+    <h3 style="margin-top:0;color:#fbbf24;">🍪 Remplacer les Cookies d'un Profil (Export Cookie-Editor / AdsPower)</h3>
+    <select id="profName" style="padding:10px;border-radius:6px;width:260px;margin-bottom:10px;font-weight:bold;">
+      <option value="Profil_1_DefaultProfile.json">Profil 1</option>
+      <option value="Profil_2_kliesocq.json">Profil 2</option>
+      <option value="Profil_3_2.json">Profil 3</option>
+      <option value="Profil_4_3.json">Profil 4</option>
+      <option value="Profil_5_4.json">Profil 5</option>
+      <option value="Profil_6_5.json">Profil 6</option>
+      <option value="Profil_7_6.json">Profil 7</option>
+      <option value="Profil_8_7.json">Profil 8</option>
+      <option value="Profil_9_8.json">Profil 9</option>
+      <option value="Profil_10_9.json">Profil 10</option>
+      <option value="Profil_11_10.json">Profil 11</option>
+      <option value="Profil_12_11.json">Profil 12</option>
+      <option value="Profil_13_13.json">Profil 13</option>
+      <option value="Profil_14_12.json">Profil 14</option>
+      <option value="Profil_15_14.json">Profil 15</option>
+      <option value="Profil_16_15.json">Profil 16</option>
+      <option value="Profil_17_16.json">Profil 17</option>
+      <option value="Profil_18_17.json">Profil 18</option>
+      <option value="Profil_19_18.json">Profil 19</option>
+      <option value="Profil_20_19.json">Profil 20</option>
+      <option value="Profil_21_20.json">Profil 21</option>
+    </select>
+    <textarea id="cookieJson" rows="6" style="width:100%;border-radius:8px;padding:10px;background:#0f172a;color:#38bdf8;border:1px solid #334155;" placeholder='Collez ici le JSON exporté de Cookie-Editor (ex: [{"name":"c_user", ...}])'></textarea>
+    <div style="margin-top:10px;display:flex;gap:10px;">
+      <button class="btn-go" onclick="saveCookie()">💾 Enregistrer & Chiffrer dans accounts.enc</button>
+      <button class="btn-gen" style="background:#475569;" onclick="document.getElementById('cookieModal').style.display='none'">Fermer</button>
     </div>
   </div>
   <div id="status"></div>
@@ -112,6 +144,15 @@ async function loadApp() {
     });
     g.innerHTML += `<div class="card"><h3><span>📦 ${cat}</span><span>${info.posts.length} posts × 20 comm.</span></h3>${postsHtml}</div>`;
   }
+}
+async function saveCookie() {
+  const p = document.getElementById('profName').value;
+  const c = document.getElementById('cookieJson').value;
+  const st = document.getElementById('status');
+  st.style.display = 'block';
+  st.innerText = '⏳ Enregistrement et chiffrement de ' + p + '...';
+  const r = await fetch('/api/cookie', {method:'POST', body: JSON.stringify({profile: p, cookies: c})});
+  st.innerText = await r.text();
 }
 async function startCloud() {
   const st = document.getElementById('status');
@@ -139,7 +180,43 @@ class AppHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(HTML.encode("utf-8"))
     def do_POST(self):
-        if self.path.startswith("/api/start"):
+        if self.path.startswith("/api/upload_enc"):
+            length = int(self.headers.get('Content-Length', 0))
+            data = self.rfile.read(length)
+            with open("accounts.enc", "wb") as f:
+                f.write(data)
+            subprocess.run('tar -xzf accounts.tar.gz 2>/dev/null || true', shell=True)
+            subprocess.run('echo "$(date)" > last_run.txt && git add accounts.enc last_run.txt && git commit -m "Auto-sync AdsPower cookies" && git push origin main', shell=True)
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(b"OK")
+            return
+        if self.path.startswith("/api/cookie"):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8'))
+            p_name = body["profile"]
+            raw_c = json.loads(body["cookies"])
+            cookies = raw_c if isinstance(raw_c, list) else raw_c.get("cookies", [])
+            clean = []
+            for ck in cookies:
+                if "name" in ck and "value" in ck:
+                    clean.append({
+                        "name": ck["name"],
+                        "value": ck["value"],
+                        "domain": ck.get("domain", ".facebook.com"),
+                        "path": ck.get("path", "/"),
+                        "secure": True,
+                        "httpOnly": ck.get("httpOnly", False),
+                        "sameSite": "None"
+                    })
+            with open(p_name, "w", encoding="utf-8") as f:
+                json.dump(clean, f, indent=2)
+            subprocess.run('tar -czf accounts.tar.gz Profil_*.json && openssl enc -aes-256-cbc -pbkdf2 -in accounts.tar.gz -out accounts.enc -pass pass:"Fastlane2026" && rm -f accounts.tar.gz && git add accounts.enc && git commit -m "Update cookies" && git push origin main', shell=True)
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.end_headers()
+            self.wfile.write(f"✅ {p_name} mis à jour ({len(clean)} cookies) et envoyé sur GitHub !".encode("utf-8"))
+        elif self.path.startswith("/api/start"):
             with open("last_run.txt", "w") as f:
                 f.write(str(time.time()))
             subprocess.run("git add auto_daily_bot.py .github/workflows/auto_9h_mensuel.yml last_run.txt && git commit -m 'Lancement Manuel: 63 posts x 20 commentaires (40s ecart)' && git push origin main", shell=True)
