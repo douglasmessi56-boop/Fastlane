@@ -1,25 +1,11 @@
 name: 🚀 Fastlane - Générateur Manuel (63 Publications)
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
-  workflow_dispatch:
-    inputs:
-      produit:
-        description: 'Choisir ALL pour lancer les 8 produits simultanément (63 publications)'
-        required: true
-        default: 'ALL'
-        type: choice
-        options:
-          - ALL
-          - SKIN
-          - VARIS
-          - MICOSE
-          - ARTHROSE
-          - MINCY
-          - HEMMEROIDE
-          - WHITE_BLOOM
-          - AUTRE
+    paths:
+      - 'last_run.txt'
 
 jobs:
   lancement_simultane:
@@ -32,31 +18,27 @@ jobs:
         categorie: [SKIN, MICOSE, MINCY, VARICES, VITILIGHO, EMMEROIDE, ARTHROSE, NEXORA]
     steps:
       - name: 📥 Récupération du code
-        if: ${{ github.event.inputs.produit == 'ALL' || github.event.inputs.produit == matrix.categorie || github.event.inputs.produit == '' }}
         uses: actions/checkout@v4
 
       - name: 🐍 Installation Python
-        if: ${{ github.event.inputs.produit == 'ALL' || github.event.inputs.produit == matrix.categorie || github.event.inputs.produit == '' }}
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: 🔓 Déchiffrement des 21 profils
-        if: ${{ github.event.inputs.produit == 'ALL' || github.event.inputs.produit == matrix.categorie || github.event.inputs.produit == '' }}
         run: |
           openssl enc -d -aes-256-cbc -pbkdf2 -in accounts.enc -out accounts.tar.gz -pass pass:"Fastlane2026"
           tar -xzf accounts.tar.gz
+          ls -la Profil_*.json | head -n 5
 
       - name: 🎭 Installation navigateur
-        if: ${{ github.event.inputs.produit == 'ALL' || github.event.inputs.produit == matrix.categorie || github.event.inputs.produit == '' }}
         run: |
           pip install playwright
           playwright install --with-deps chromium
 
-      - name: 💬 Envoi Commentaires (${{ matrix.categorie }} - 40s écart - Proxy TN)
-        if: ${{ github.event.inputs.produit == 'ALL' || github.event.inputs.produit == matrix.categorie || github.event.inputs.produit == '' }}
+      - name: 💬 Envoi Commentaires (${{ matrix.categorie }} - 20 comm x 40s - Proxy TN)
         env:
-          PROXY_TN: ${{ secrets.PROXY_TN }}
+          PROXY_TN: "http://Oy44RYiT2xPWmMrZ:iOF0ptf2RbPGbyVq_country-tn@geo.iproyal.com:12321"
           PYTHONUNBUFFERED: "1"
         run: |
           sleep $((RANDOM % 10))
