@@ -358,7 +358,7 @@ def run_category(target_cat):
                         if "checkpoint" in page.url or "login" in page.url:
                             print(f"🔴 {prof} : Checkpoint sur mbasic -> passage au profil suivant !")
                             break
-                        print(f"   🌐 [{prof}] Titre: {page.title()[:35]} | URL: {page.url[:55]}")
+                        print(f"   🌐 [{prof}] Titre: {page.title()[:20]} | URL: {page.url[:20]}")
                         posted_ok = False
                         for attempt_mode in ["desktop", "mobile"]:
                             if attempt_mode == "mobile":
