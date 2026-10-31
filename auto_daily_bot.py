@@ -1,3 +1,20 @@
+# --- GENERATEUR DYNAMIQUE TUNISIEN ---
+import time as _t, random as _r
+_r.seed(_t.time_ns())
+
+_PREF = ["", "Slm, ", "Brabi ", "Wallahi ", "Machallah ", "Ya3tikom essaha, ", "Bonsoir, ", "Bellehi ", "Franchement "]
+_SUFF = [" 🙏", " ❤️", " 👍", " ✨", " svp ?", " merci !", " bravo 👏", ""]
+
+def _gen_comment(base_msg):
+    p = _r.choice(_PREF)
+    s = _r.choice(_SUFF)
+    if p and not base_msg.lower().startswith(p.strip().lower()):
+        txt = f"{p}{base_msg[0].lower() + base_msg[1:] if len(base_msg) > 1 else base_msg}{s}"
+    else:
+        txt = f"{base_msg}{s}"
+    return txt.strip()
+# -------------------------------------
+
 
 def get_tn_proxy():
     import os, random, string, re
@@ -241,39 +258,39 @@ SUJETS_PAR_CAT = {
 def generate_unique_comment(cat, used_set):
     data = SUJETS_PAR_CAT.get(cat, SUJETS_PAR_CAT["SKIN"])
     for _ in range(100):
-        style = random.choice(["ar_q", "ar_rev", "ar_cmd", "fr_q", "fr_rev", "fr_cmd"])
-        v_ar = random.choice(VILLES_AR)
-        v_fr = random.choice(VILLES_FR)
-        c_ar = random.choice(data["ar_core"])
-        c_fr = random.choice(data["fr_core"])
+        style = _gen_comment(random.choice(["ar_q", "ar_rev", "ar_cmd", "fr_q", "fr_rev", "fr_cmd"]))
+        v_ar = _gen_comment(random.choice(VILLES_AR))
+        v_fr = _gen_comment(random.choice(VILLES_FR))
+        c_ar = _gen_comment(random.choice(data["ar_core"]))
+        c_fr = _gen_comment(random.choice(data["fr_core"]))
 
         if style == "ar_q":
-            debut = random.choice(["بربي سؤال،", "سلام، بربي", "عسلامة، حبيت نسأل", "لو سمحتو،", "بربي جاوبوني،"])
-            fin = random.choice([f"وقداش التوصيل {v_ar}؟", "والنتيجة بعد قداش تظهر؟", "والدفع عند الاستلام؟", "وفما تخفيض كي ناخذ زوج؟"])
+            debut = _gen_comment(random.choice(["بربي سؤال،", "سلام، بربي", "عسلامة، حبيت نسأل", "لو سمحتو،", "بربي جاوبوني،"]))
+            fin = _gen_comment(random.choice([f"وقداش التوصيل {v_ar}؟", "والنتيجة بعد قداش تظهر؟", "والدفع عند الاستلام؟", "وفما تخفيض كي ناخذ زوج؟"]))
             txt = f"{debut} هل بالحق {c_ar}؟ {fin}"
         elif style == "ar_rev":
-            debut = random.choice(["والله عن تجربة", "الحمد لله خذيت منو،", "يعطيكم ألف صحة،", "بصراحة منتج روعة،", "جربتو عندي مدة،"])
-            fin = random.choice(["ننصح بيه الناس الكل", "وصلتني الكوموند في يومين برك", "سلعة أصلية ومعاملة راقية", "رتحني برشا الحمد لله"])
+            debut = _gen_comment(random.choice(["والله عن تجربة", "الحمد لله خذيت منو،", "يعطيكم ألف صحة،", "بصراحة منتج روعة،", "جربتو عندي مدة،"]))
+            fin = _gen_comment(random.choice(["ننصح بيه الناس الكل", "وصلتني الكوموند في يومين برك", "سلعة أصلية ومعاملة راقية", "رتحني برشا الحمد لله"]))
             txt = f"{debut} {c_ar}، {fin}"
         elif style == "ar_cmd":
-            debut = random.choice(["نحب نعدي كوموند", "بعثتلكم مساج في الخاص", "خليتلكم رقمي في البريفي", "حاجتي بعلبتين بربي"])
+            debut = _gen_comment(random.choice(["نحب نعدي كوموند", "بعثتلكم مساج في الخاص", "خليتلكم رقمي في البريفي", "حاجتي بعلبتين بربي"]))
             txt = f"{debut} {v_ar}، ضاهر فيه {c_ar}، كلموني للتأكيد"
         elif style == "fr_q":
-            debut = random.choice(["Slm brabi,", "3aslema,", "Brabi sou2el,", "Bjr,"])
-            fin = random.choice([f"w b 9adeh livraison {v_fr} ?", "w 9adeh ya5ou wa9t el tawssil ?", "w fama promo 3la zouz 3lab ?"])
+            debut = _gen_comment(random.choice(["Slm brabi,", "3aslema,", "Brabi sou2el,", "Bjr,"]))
+            fin = _gen_comment(random.choice([f"w b 9adeh livraison {v_fr} ?", "w 9adeh ya5ou wa9t el tawssil ?", "w fama promo 3la zouz 3lab ?"]))
             txt = f"{debut} est-ce que {c_fr} ? {fin}"
         elif style == "fr_rev":
-            debut = random.choice(["Mjarbou 3andi jom3tin,", "Wallahi tayara,", "Ya3tikom el sa7a,", "Saraha top,"])
-            fin = random.choice(["livraison rapide l bab el dar", "nanssa7 bih 100%", "natija todhhor men awwel استعمـال"])
+            debut = _gen_comment(random.choice(["Mjarbou 3andi jom3tin,", "Wallahi tayara,", "Ya3tikom el sa7a,", "Saraha top,"]))
+            fin = _gen_comment(random.choice(["livraison rapide l bab el dar", "nanssa7 bih 100%", "natija todhhor men awwel استعمـال"]))
             txt = f"{debut} {c_fr} w {fin}"
         else:
-            debut = random.choice(["Ena n7eb nsob commande", "B3atht numéro tel fil privé", "N7eb na5ou zouz", "Kallmouni nأكد الكوموند"])
+            debut = _gen_comment(random.choice(["Ena n7eb nsob commande", "B3atht numéro tel fil privé", "N7eb na5ou zouz", "Kallmouni nأكد الكوموند"]))
             txt = f"{debut} {v_fr}, 3jabni khater {c_fr}"
 
         if txt not in used_set:
             used_set.add(txt)
             return txt
-    return f"Slm n7eb n3adi commande {random.choice(VILLES_FR)}, b3atht fil privé"
+    return f"Slm n7eb n3adi commande {_gen_comment(random.choice(VILLES_FR))}, b3atht fil privé"
 
 def try_post_comment(page, comment):
     try:
@@ -371,7 +388,7 @@ def run_category(target_cat):
                                 ta.scroll_into_view_if_needed()
                                 ta.click(force=True)
                                 page.wait_for_timeout(700)
-                                msg = random.choice(COMMENTS)
+                                msg = _gen_comment(random.choice(COMMENTS))
                                 page.keyboard.type(msg, delay=35)
                                 page.wait_for_timeout(800)
                                 page.keyboard.press("Enter")
